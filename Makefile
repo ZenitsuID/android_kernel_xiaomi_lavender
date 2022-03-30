@@ -52,3 +52,51 @@ subdir-$(CONFIG_GDB_SCRIPTS) += gdb
 
 # Let clean descend into subdirs
 subdir-	+= basic kconfig package
+
+# Read KERNELRELEASE from include/config/kernel.release (if it exists)
+KERNELRELEASE = $(shell cat include/config/kernel.release 2> /dev/null)
+KERNELVERSION = $(VERSION)$(if $(PATCHLEVEL),.$(PATCHLEVEL)$(if $(SUBLEVEL),.$(SUBLEVEL)))$(EXTRAVERSION)
+
+export VERSION PATCHLEVEL SUBLEVEL KERNELRELEASE KERNELVERSION
+export ARCH SRCARCH CONFIG_SHELL HOSTCC HOSTCFLAGS CROSS_COMPILE AS LD CC
+export CPP AR NM STRIP OBJCOPY OBJDUMP
+export MAKE AWK GENKSYMS INSTALLKERNEL PERL PYTHON UTS_MACHINE
+export HOSTCXX HOSTCXXFLAGS LDFLAGS_MODULE CHECK CHECKFLAGS
+
+# To make sure we do not include .config for any of the *config targets
+# catch them early, and hand them over to scripts/kconfig/Makefile
+# It is allowed to specify more targets when calling make, including
+# mixing *config targets and build targets.
+# For example 'make oldconfig all'.
+# Detect when mixed targets is specified, and make a second invocation
+# of make so .config is not included in this case either (for *config).
+
+version_h := include/generated/uapi/linux/version.h
+old_version_h := include/linux/version.h
+
+no-dot-config-targets := clean mrproper distclean \
+			 cscope gtags TAGS tags help% %docs check% coccicheck \
+			 $(version_h) headers_% archheaders archscripts \
+			 kernelversion %src-pkg
+
+config-targets := 0
+mixed-targets  := 0
+dot-config     := 1
+
+# Handle descending into subdirectories listed in $(vmlinux-dirs)
+# Preset locale variables to speed up the build process. Limit locale
+# tweaks to this spot to avoid wrong language settings when running
+# make menuconfig etc.
+# Error messages still appears in the original language
+
+PHONY += $(vmlinux-dirs)
+$(vmlinux-dirs): prepare scripts
+	$(Q)$(MAKE) $(build)=$@
+
+define filechk_kernel.release
+	echo "$(KERNELVERSION)$$($(CONFIG_SHELL) $(srctree)/scripts/setlocalversion $(srctree))"
+endef
+
+# Store (new) KERNELRELEASE string in include/config/kernel.release
+include/config/kernel.release: include/config/auto.conf FORCE
+	$(call filechk,kernel.release)
