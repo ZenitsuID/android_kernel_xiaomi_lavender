@@ -30,7 +30,7 @@ VERSION=X1
 DEFCONFIG=lavender-perf_defconfig
 
 # Files
-IMAGE=$(pwd)/lavender/out/arch/arm64/boot/Image.gz-dtb
+IMAGE=$(pwd)/out/arch/arm64/boot/Image.gz-dtb
 
 # Verbose Build
 VERBOSE=0
@@ -110,7 +110,7 @@ function cloneTC() {
 	PATH="${KERNEL_DIR}/aosp-clang/bin:${KERNEL_DIR}/gcc/bin:${KERNEL_DIR}/gcc32/bin:${PATH}"
 	fi
     # Clone AnyKernel
-        git clone --depth=1 https://github.com/ZenitsuID/AnyKernel3
+    git clone --depth=1 https://github.com/reaPeR1010/AnyKernel3
 
 	}
 	
