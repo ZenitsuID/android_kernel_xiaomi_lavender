@@ -16,7 +16,7 @@ if [ ! -d "${PWD}/kernel_ccache" ];
 
 ##----------------------------------------------------------##
 # Specify Kernel Directory
-KERNEL_DIR="$(pwd)/device"
+KERNEL_DIR="$(pwd)"
 
 ##----------------------------------------------------------##
 # Device Name and Model
@@ -28,10 +28,6 @@ VERSION=X1
 
 # Kernel Defconfig
 DEFCONFIG=lavender-perf_defconfig
-
-# Clang Directory
-CLANG_ROOTDIR=$(pwd)/clang
-PATH="${PATH}:${CLANG_ROOTDIR}/bin"
 
 # Files
 IMAGE=$(pwd)/lavender/out/arch/arm64/boot/Image.gz-dtb
