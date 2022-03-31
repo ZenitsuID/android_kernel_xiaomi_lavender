@@ -202,7 +202,7 @@ START=$(date +"%s")
 	       V=$VERBOSE 2>&1 | tee error.log \
     elif [ -d ${KERNEL_DIR}/gcc64 ];
 	   then
-	       make -kj$(nproc --all) O=out \
+	       make -j$(nproc --all) O=out \
 	       ARCH=arm64 \
 	       CROSS_COMPILE_COMPAT=arm-eabi- \
 	       CROSS_COMPILE=aarch64-elf- \
@@ -215,7 +215,7 @@ START=$(date +"%s")
 	       V=$VERBOSE 2>&1 | tee error.log
     elif [ -d ${KERNEL_DIR}/aosp-clang ];
            then
-               make -kj$(nproc --all) O=out \
+               make -j$(nproc --all) O=out \
 	       ARCH=arm64 \
 	       LLVM=1 \
 	       LLVM_IAS=1 \
