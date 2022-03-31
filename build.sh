@@ -21,7 +21,7 @@ KERNEL_DIR="$(pwd)"
 ##----------------------------------------------------------##
 # Device Name and Model
 MODEL=Xiaomi
-DEVICE=Lavender
+DEVICE=lavender
 
 # Kernel Version Code
 VERSION=X1
@@ -87,7 +87,7 @@ function cloneTC() {
 	elif [ $COMPILER = "azure" ];
 	then
 	post_msg "|| Cloning Azure Clang-14 ToolChain ||"
-	git clone --depth=1 https://gitlab.com/Panchajanya1999/azure-clang.git clang
+	git clone -q -b main --depth=1 https://gitlab.com/Panchajanya1999/azure-clang clang
 	PATH="${KERNEL_DIR}/clang/bin:$PATH"
 	
 	elif [ $COMPILER = "eva" ];
@@ -187,21 +187,42 @@ START=$(date +"%s")
     post_msg "<b>$KBUILD_BUILD_VERSION CI Build Triggered</b>%0A<b>Docker OS: </b><code>$DISTRO</code>%0A<b>Kernel Version : </b><code>$KERVER</code>%0A<b>Date : </b><code>$(TZ=Asia/Jakarta date)</code>%0A<b>Device : </b><code>$MODEL [$DEVICE]</code>%0A<b>Pipeline Host : </b><code>$KBUILD_BUILD_HOST</code>%0A<b>Host Core Count : </b><code>$PROCS</code>%0A<b>Compiler Used : </b><code>$KBUILD_COMPILER_STRING</code>%0A<b>Branch : </b><code>$CI_BRANCH</code>%0A<b>Top Commit : </b><a href='$DRONE_COMMIT_LINK'>$COMMIT_HEAD</a>"
 
     # Compile
-    if [[ $COMPILER = "azure" ]]
+    make O=out ARCH=arm64 ${DEFCONFIG}
+    if [ -d ${KERNEL_DIR}/clang ];
        then
-        make O=out ARCH=arm64 ${DEFCONFIG}
-		make -j$(nproc --all) O=out \
-				ARCH=arm64 \
-				CC="ccache clang" \
-				LD=ld.lld \
-				AR=llvm-ar \
-				NM=llvm-nm \
-				OBJCOPY=llvm-objcopy \
-				OBJDUMP=llvm-objdump \
-				STRIP=llvm-strip \
-				V=$VERBOSE \
-				CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
-				CROSS_COMPILE=aarch64-linux-gnu- 2>&1 | tee error.log
+	       make -j$(nproc --all) O=out ARCH=arm64 \
+	       CC=clang \
+	       LD=ld.lld AR=llvm-ar \
+	       AS=llvm-as NM=llvm-nm \
+	       OBJCOPY=llvm-objcopy \
+	       OBJDUMP=llvm-objdump \
+	       STRIP=llvm-strip \
+	       CROSS_COMPILE=aarch64-linux-gnu- \
+	       CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
+	       V=$VERBOSE 2>&1 | tee error.log \
+    elif [ -d ${KERNEL_DIR}/gcc64 ];
+	   then
+	       make -kj$(nproc --all) O=out \
+	       ARCH=arm64 \
+	       CROSS_COMPILE_COMPAT=arm-eabi- \
+	       CROSS_COMPILE=aarch64-elf- \
+	       AR=llvm-ar \
+	       NM=llvm-nm \
+	       OBJCOPY=llvm-objcopy \
+	       OBJDUMP=llvm-objdump \
+	       STRIP=llvm-strip \
+	       OBJSIZE=llvm-size \
+	       V=$VERBOSE 2>&1 | tee error.log
+    elif [ -d ${KERNEL_DIR}/aosp-clang ];
+           then
+               make -kj$(nproc --all) O=out \
+	       ARCH=arm64 \
+	       LLVM=1 \
+	       LLVM_IAS=1 \
+	       CLANG_TRIPLE=aarch64-linux-gnu- \
+	       CROSS_COMPILE=aarch64-linux-android- \
+	       CROSS_COMPILE_COMPAT=arm-linux-androideabi- \
+	       V=$VERBOSE 2>&1 | tee error.log
     fi
 	
 	# Verify Files
