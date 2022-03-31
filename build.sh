@@ -109,10 +109,10 @@ KERVER=$(make kernelversion)
 function download_ccache() {
   if grep "ccache" $conf; then
   echo "|| Downloading CCACHE ||"
-	git config --global user.name wHo-EM-i
-	git config --global user.email ehteshammalik18998@gmail.com
+	git config --global user.name ZenitsuID
+	git config --global user.email zenitsuxd5@gmail.com
   xd_info "Downloading CCACHE..."
-	git clone --depth=1 https://who-em-i:$gh_token@github.com/wHo-EM-i/drone_ccache_backups.git -b ${CCACHE_BRANCH} ${CCACHE_BRANCH}
+	git clone --depth=1 https://ZenitsuID:$gh_token@github.com/ZenitsuID/drone_ccache_backups.git -b ${CCACHE_BRANCH} ${CCACHE_BRANCH}
 	xd_info "Exported CCACHE $(du ${KERNEL_DIR}/${CCACHE_BRANCH} -sh)"
   export CCACHE_DIR=${KERNEL_DIR}/${CCACHE_BRANCH}
   export CCACHE_EXEC=$(which ccache)
@@ -182,7 +182,7 @@ function exports() {
 export ARCH=arm64
 export SUBARCH=arm64
 export KBUILD_BUILD_HOST=DroneCI
-export KBUILD_BUILD_USER="wHoEMi"
+export KBUILD_BUILD_USER="ZenitsuID"
 }
 
 # Send info plox channel
