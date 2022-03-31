@@ -12,6 +12,10 @@ KERNEL_DIR=${PWD}
 
 IMAGE=${PWD}/out/arch/arm64/boot/Image.gz-dtb
 
+# create config file for build variant info
+echo $@ > my.conf
+conf=${KERNEL_DIR}/my.conf
+
 # Specify compiler.
 # 'aosp', 'azure' or 'gcc'
 if grep "aosp" $conf; then
@@ -35,7 +39,6 @@ COMPILER=aosp
   fi
 elif grep "azure" $conf; then
 COMPILER=azure
-  if grep "full-lto" $conf; then
 	if grep "oldcam" $conf; then
 		CCACHE_BRANCH=azure-oldcam
 	elif grep "newcam" $conf; then
