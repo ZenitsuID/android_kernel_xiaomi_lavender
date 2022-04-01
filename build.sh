@@ -41,76 +41,76 @@ KERVER=$(make kernelversion)
 COMMIT_HEAD=$(git log --oneline -1)
 
 # Date and Time
-DATE=$(TZ=Asia/Kolkata date +"%Y%m%d-%T")
+DATE=$(TZ=Asia/Jakarta date +"%Y%m%d-%T")
 TANGGAL=$(date +"%F%S")
 
 # Specify Final Zip Name
-ZIPNAME=Nexus
+ZIPNAME=Wolf-
 FINAL_ZIP=${ZIPNAME}-${VERSION}-${DEVICE}-Kernel-${TANGGAL}.zip
 
 ##----------------------------------------------------------##
 # Specify compiler.
 
-if [ "$1" = "--eva" ];
-then
-COMPILER=eva
-elif [ "$1" = "--proton" ];
-then
-COMPILER=proton
-elif [ "$1" = "--aosp" ];
-then
-COMPILER=aosp
-elif [ "$1" = "--azure" ];
-then
-COMPILER=azure
-elif [ "$1" = "--neutron" ];
-then
-COMPILER=neutron
-fi
+	if [ "$1" = "--eva" ];
+      then
+         COMPILER=eva
+	elif [ "$1" = "--proton" ];
+      then
+         COMPILER=proton
+	elif [ "$1" = "--aosp" ];
+      then
+         COMPILER=aosp
+	elif [ "$1" = "--azure" ];
+      then
+         COMPILER=azure
+	elif [ "$1" = "--neutron" ];
+      then
+         COMPILER=neutron
+	fi
 
 ##----------------------------------------------------------##
 # Clone ToolChain
 function cloneTC() {
 	
 	if [ $COMPILER = "neutron" ];
-	then
-	post_msg " Cloning Neutron Clang ToolChain "
+	   then
+	       post_msg " Cloning Neutron Clang ToolChain "
 	git clone --depth=1  https://github.com/Neutron-Clang/neutron-toolchain.git clang
 	PATH="${KERNEL_DIR}/clang/bin:$PATH"
 	
 	elif [ $COMPILER = "proton" ];
-	then
-	post_msg " Cloning Proton Clang ToolChain "
-	git clone --depth=1  https://github.com/kdrag0n/proton-clang.git clang
-	PATH="${KERNEL_DIR}/clang/bin:$PATH"
+	   then
+	       post_msg " Cloning Proton Clang ToolChain "
+	       git clone --depth=1 https://github.com/kdrag0n/proton-clang.git clang
+	       PATH="${KERNEL_DIR}/clang/bin:$PATH"
 	
 	elif [ $COMPILER = "azure" ];
-	then
-	post_msg " Cloning Azure Clang ToolChain "
-	git clone --depth=1  https://gitlab.com/Panchajanya1999/azure-clang.git clang
-	PATH="${KERNEL_DIR}/clang/bin:$PATH"
+	   then
+	       post_msg " Cloning Azure Clang ToolChain "
+	       git clone --depth=1  https://gitlab.com/Panchajanya1999/azure-clang.git clang
+	       PATH="${KERNEL_DIR}/clang/bin:$PATH"
 	
 	elif [ $COMPILER = "eva" ];
-	then
-	post_msg " Cloning Eva GCC ToolChain "
-	git clone --depth=1 https://github.com/mvaisakh/gcc-arm64.git -b gcc-new gcc64
-	git clone --depth=1 https://github.com/mvaisakh/gcc-arm.git -b gcc-new gcc32
-	PATH=$KERNEL_DIR/gcc64/bin/:$KERNEL_DIR/gcc32/bin/:/usr/bin:$PATH
+	   then
+	       post_msg " Cloning Eva GCC ToolChain "
+	       git clone --depth=1 https://github.com/mvaisakh/gcc-arm64.git -b gcc-new gcc64
+	       git clone --depth=1 https://github.com/mvaisakh/gcc-arm.git -b gcc-new gcc32
+	       PATH=$KERNEL_DIR/gcc64/bin/:$KERNEL_DIR/gcc32/bin/:/usr/bin:$PATH
 	
 	elif [ $COMPILER = "aosp" ];
-	then
-	post_msg " Cloning Aosp Clang 14.0.1 ToolChain "
-        mkdir aosp-clang
-        cd aosp-clang || exit
-	wget -q https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-r437112b.tar.gz
-        tar -xf clang*
-        cd .. || exit
-	git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9.git --depth=1 gcc
-	git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9.git  --depth=1 gcc32
-	PATH="${KERNEL_DIR}/aosp-clang/bin:${KERNEL_DIR}/gcc/bin:${KERNEL_DIR}/gcc32/bin:${PATH}"
+	   then
+	       post_msg " Cloning Aosp Clang 14.0.1 ToolChain "
+           mkdir aosp-clang
+           cd aosp-clang || exit
+	       wget -q https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-r437112b.tar.gz
+           tar -xf clang*
+           cd .. || exit
+	       git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9.git --depth=1 gcc
+	       git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9.git  --depth=1 gcc32
+	       PATH="${KERNEL_DIR}/aosp-clang/bin:${KERNEL_DIR}/gcc/bin:${KERNEL_DIR}/gcc32/bin:${PATH}"
 	fi
-        # Clone AnyKernel
-        git clone --depth=1 https://github.com/reaPeR1010/AnyKernel3
+    # Clone AnyKernel
+    git clone --depth=1 https://github.com/ZenitsuID/AnyKernel3
 
 	}
 	
@@ -138,8 +138,8 @@ function exports() {
         export LOCALVERSION="-${VERSION}"
         
         # KBUILD HOST and USER
-        export KBUILD_BUILD_HOST=ArchLinux
-        export KBUILD_BUILD_USER="Prashant"
+        export KBUILD_BUILD_HOST="Ubuntu-21.04"
+        export KBUILD_BUILD_USER="ZenitsuID"
         
         # CI
         if [ "$CI" ]
@@ -150,12 +150,13 @@ function exports() {
                   export KBUILD_BUILD_VERSION=${CIRCLE_BUILD_NUM}
                   export CI_BRANCH=${CIRCLE_BRANCH}
            elif [ "$DRONE" ]
-	      then
-		  export KBUILD_BUILD_VERSION=${DRONE_BUILD_NUMBER}
-		  export CI_BRANCH=${DRONE_BRANCH}
+              then
+                  export KBUILD_BUILD_VERSION=${DRONE_BUILD_NUMBER}
+                  export CI_BRANCH=${DRONE_BRANCH}
            fi
 		   
         fi
+
 	export PROCS=$(nproc --all)
 	export DISTRO=$(source /etc/os-release && echo "${NAME}")
 	}
@@ -178,18 +179,19 @@ function push() {
 	-F "parse_mode=html" \
 	-F caption="$2"
 	}
+	
 ##----------------------------------------------------------##
 # Compilation
 function compile() {
 START=$(date +"%s")
 	# Push Notification
-	post_msg "<b>$KBUILD_BUILD_VERSION CI Build Triggered</b>%0A<b>Docker OS: </b><code>$DISTRO</code>%0A<b>Kernel Version : </b><code>$KERVER</code>%0A<b>Date : </b><code>$(TZ=Asia/Kolkata date)</code>%0A<b>Device : </b><code>$MODEL [$DEVICE]</code>%0A<b>Pipeline Host : </b><code>$KBUILD_BUILD_HOST</code>%0A<b>Host Core Count : </b><code>$PROCS</code>%0A<b>Compiler Used : </b><code>$KBUILD_COMPILER_STRING</code>%0A<b>Branch : </b><code>$CI_BRANCH</code>%0A<b>Top Commit : </b><a href='$DRONE_COMMIT_LINK'>$COMMIT_HEAD</a>"
+	post_msg "<b>$KBUILD_BUILD_VERSION CI Build Triggered</b>%0A<b>Docker OS: </b><code>$DISTRO</code>%0A<b>Kernel Version : </b><code>$KERVER</code>%0A<b>Date : </b><code>$(TZ=Asia/Jakarta date)</code>%0A<b>Device : </b><code>$MODEL [$DEVICE]</code>%0A<b>Pipeline Host : </b><code>$KBUILD_BUILD_HOST</code>%0A<b>Host Core Count : </b><code>$PROCS</code>%0A<b>Compiler Used : </b><code>$KBUILD_COMPILER_STRING</code>%0A<b>Branch : </b><code>$CI_BRANCH</code>%0A<b>Top Commit : </b><a href='$DRONE_COMMIT_LINK'>$COMMIT_HEAD</a>"
 	
 	# Compile
 	make O=out CC="ccache clang" ARCH=arm64 ${DEFCONFIG}
 	if [ -d ${KERNEL_DIR}/clang ];
 	   then
-	       make -kj$(nproc --all) O=out \
+	       make -j$(nproc --all) O=out \
 	       ARCH=arm64 \
 	       CC="ccache clang" \
 	       CROSS_COMPILE=aarch64-linux-gnu- \
@@ -197,7 +199,7 @@ START=$(date +"%s")
 	       V=$VERBOSE 2>&1 | tee error.log
 	elif [ -d ${KERNEL_DIR}/gcc64 ];
 	   then
-	       make -kj$(nproc --all) O=out \
+	       make -j$(nproc --all) O=out \
 	       ARCH=arm64 \
 	       CROSS_COMPILE_COMPAT=arm-eabi- \
 	       CROSS_COMPILE=aarch64-elf- \
@@ -208,9 +210,9 @@ START=$(date +"%s")
 	       STRIP=llvm-strip \
 	       OBJSIZE=llvm-size \
 	       V=$VERBOSE 2>&1 | tee error.log
-        elif [ -d ${KERNEL_DIR}/aosp-clang ];
-           then
-               make -kj$(nproc --all) O=out \
+	elif [ -d ${KERNEL_DIR}/aosp-clang ];
+	   then
+	       make -j$(nproc --all) O=out \
 	       ARCH=arm64 \
 	       LLVM=1 \
 	       LLVM_IAS=1 \
